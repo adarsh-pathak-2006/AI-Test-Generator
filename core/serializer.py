@@ -18,6 +18,11 @@ class MainDBSerializer(ModelSerializer):
         model=MainDB
         fields=['user', 'document', 'created_by']
 
+class AnswerSerializer(ModelSerializer):
+    class Meta:
+        model=Quesans
+        fields=['answer']
+
 class QuesAnsSerializer(ModelSerializer):
     input=MainDBSerializer(read_only=True)
     class Meta:
