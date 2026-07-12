@@ -23,3 +23,4 @@ class QuesAnsSerializer(ModelSerializer):
     class Meta:
         model=Quesans
         fields='__all__'
+
