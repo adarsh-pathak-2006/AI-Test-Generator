@@ -10,7 +10,7 @@ class MainDB(models.Model):
         return self.document[:100]
     
 class Quesans(models.Model):
-    input=models.ForeignKey(MainDB, on_delete=models.CASCADE)
+    input=models.ForeignKey(MainDB, on_delete=models.CASCADE, related_name='questionsanswers')
     question=models.TextField()
     option1=models.TextField()
     option2=models.TextField()
