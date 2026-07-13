@@ -4,6 +4,7 @@ from core.models import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from services.output import final_output
+from rest_framework.generics import RetrieveUpdateAPIView
 
 
 class RegisterAPI(APIView):
@@ -35,15 +36,39 @@ class DashboardAPI(APIView):
         serial=MainDBSerializer(data=request.data)
         if serial.is_valid():
             document=serial.validated_data['document']
-            serial.save(user=request.user)
             output_data=final_output(input=document)
+            main_obj=MainDB.objects.create(user=request.user, document=document)
             for output in output_data:
                 quesans_serial=QuesAnsSerializer(data=output)
                 if quesans_serial.is_valid():
-                    quesans_serial.save(input__user=request.user)
+                    question=quesans_serial.validated_data['question']
+                    option1=quesans_serial.validated_data['option1']
+                    option2=quesans_serial.validated_data['option2']
+                    option3=quesans_serial.validated_data['option3']
+                    option4=quesans_serial.validated_data['option4']
+                    correct_ans=quesans_serial.validated_data['correct_ans']
+                    Quesans.objects.create(input=main_obj, question=question, option1=option1, option2=option2, option3=option3, option4=option4, correct_ans=correct_ans)
                 else:
                     return Response({ 'invalid':'invalid ai response returned' })
         else:
             return Response({ 'invalid':'invalid inputs' })        
 
 
+class QuizAPI(APIView):
+    def get(self, request, pk, ck):
+        main_obj=get_object_or_404(MainDB, user=request.user, id=pk)
+        ques_data=get_object_or_404(Quesans, input=main_obj, id=ck)
+        serial=QuestionSerializer(ques_data)
+        return Response(serial.data)
+    
+    def put(self, request, pk, ck):
+        main_obj=get_object_or_404(MainDB, user=request.user, id=pk)
+        ques_data=get_object_or_404(Quesans, input=main_obj, id=ck)
+        serial=AnswerSerializer(ques_data, data=request.data)
+        if serial.is_valid():
+            serial.save()
+        else:
+            return Response({ 'message':'invalid input' })
+        
+
+    

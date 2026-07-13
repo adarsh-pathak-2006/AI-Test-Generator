@@ -29,3 +29,7 @@ class QuesAnsSerializer(ModelSerializer):
         model=Quesans
         fields='__all__'
 
+class QuestionSerializer(ModelSerializer):
+    class Meta:
+        model=Quesans
+        fields=['question', 'option1', 'option2', 'option3', 'option4']
