@@ -36,7 +36,7 @@ class DashboardAPI(APIView):
         serial=MainDBSerializer(data=request.data)
         if serial.is_valid():
             document=serial.validated_data['document']
-            output_data=final_output(input=document)
+            output_data=final_output(doc=document)
             main_obj=MainDB.objects.create(user=request.user, document=document)
             for output in output_data:
                 quesans_serial=QuesAnsSerializer(data=output)
@@ -47,7 +47,7 @@ class DashboardAPI(APIView):
                     option3=quesans_serial.validated_data['option3']
                     option4=quesans_serial.validated_data['option4']
                     correct_ans=quesans_serial.validated_data['correct_ans']
-                    Quesans.objects.create(input=main_obj, question=question, option1=option1, option2=option2, option3=option3, option4=option4, correct_ans=correct_ans)
+                    Quesans.objects.create(main=main_obj, question=question, option1=option1, option2=option2, option3=option3, option4=option4, correct_ans=correct_ans)
                 else:
                     return Response({ 'invalid':'invalid ai response returned' })
         else:
