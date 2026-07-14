@@ -21,6 +21,6 @@ class Quesans(models.Model):
     mark=models.PositiveIntegerField(default=0)
 
     def __str__(self):
-        return self.input.__str__
+        return self.question[:100]
     
 
