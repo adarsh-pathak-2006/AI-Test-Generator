@@ -4,10 +4,16 @@ from core.models import *
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from services.output import final_output
-from rest_framework.generics import RetrieveUpdateAPIView
+from core.throttle import LoginUserThrottle, RegisterUserThrottle, QuizCreationThrottle
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework.permissions import IsAuthenticated
 
+
+class CustomObtainPair(TokenObtainPairView):
+    throttle_classes=[LoginUserThrottle]
 
 class RegisterAPI(APIView):
+    throttle_classes=[RegisterUserThrottle]
     def post(self, request):
         serial=RegisterSerializer(data=request.data)
         if serial.is_valid():
@@ -27,6 +33,12 @@ class RegisterAPI(APIView):
 
 
 class DashboardAPI(APIView):
+    permission_classes=[IsAuthenticated]
+    def get_throttles(self):
+        if self.request.method=='POST':
+            return [QuizCreationThrottle()]
+        return [] 
+
     def get(self, request):
         data=MainDB.objects.filter(user=request.user)
         serial=MainDBSerializer(data, many=True)
@@ -47,15 +59,16 @@ class DashboardAPI(APIView):
                     option3=quesans_serial.validated_data['option3']
                     option4=quesans_serial.validated_data['option4']
                     correct_ans=quesans_serial.validated_data['correct_ans']
-                    Quesans.objects.create(main=main_obj, question=question, option1=option1, option2=option2, option3=option3, option4=option4, correct_ans=correct_ans)
-                    return Response({ 'message':'quiz created successfully' })
+                    Quesans.objects.create(main=main_obj, question=question, option1=option1, option2=option2, option3=option3, option4=option4, correct_ans=correct_ans)   
                 else:
                     return Response({ 'invalid':'invalid ai response returned' })
+            return Response({ 'message':'Quiz created Successfully' }) 
         else:
             return Response({ 'invalid':'invalid inputs' })        
 
 
 class QuizAPI(APIView):
+    permission_classes=[IsAuthenticated]
     def get(self, request, pk, ck):
         main_obj=get_object_or_404(MainDB, user=request.user, id=pk)
         ques_data=get_object_or_404(Quesans, input=main_obj, id=ck)
