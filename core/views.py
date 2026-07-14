@@ -94,10 +94,11 @@ class QuizAPI(APIView):
         if serial.is_valid():
             answer=serial.validated_data['answer']
             if answer==ques_data.correct_ans:
-                ques_data.mark='R'
-                ques_data.save()
-                main_obj.score+=1
-                main_obj.save(user=request.user)
+                if ques_data.mark != 'R':
+                    ques_data.mark='R'
+                    ques_data.save()
+                    main_obj.score+=1
+                    main_obj.save()
                 return Response({ 'message':'correct answer' })
             else:
                 return Response({ 'message':'wrong answer' })
