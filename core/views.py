@@ -66,7 +66,24 @@ class QuizAPI(APIView):
         ques_data=get_object_or_404(Quesans, input=main_obj, id=ck)
         serial=AnswerSerializer(ques_data, data=request.data)
         if serial.is_valid():
-            serial.save()
+            correct_ans=serial.validated_data['correct_ans']
+            answer=serial.validated_data['answer']
+            option1=serial.validated_data['option1']
+            option2=serial.validated_data['option2']
+            option3=serial.validated_data['option3']
+            option4=serial.validated_data['option4']
+            if correct_ans==option1:
+                if answer=='A':
+                    serial.save(mark=1)
+            elif correct_ans==option2:
+                if answer=='B':
+                    serial.save(mark=1)
+            elif correct_ans==option3:
+                if answer=='C':
+                    serial.save(mark=1)
+            elif correct_ans==option4:
+                if answer=='D':
+                    serial.save(mark=1)
         else:
             return Response({ 'message':'invalid input' })
         

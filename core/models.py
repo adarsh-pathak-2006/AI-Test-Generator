@@ -18,7 +18,9 @@ class Quesans(models.Model):
     option4=models.TextField()
     answer=models.CharField(max_length=1, choices=[('A','A'), ('B','B'), ('C','C'), ('D','D')], null=True)
     correct_ans=models.TextField()
+    mark=models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.input.__str__
+    
 
