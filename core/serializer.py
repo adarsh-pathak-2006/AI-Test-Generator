@@ -16,7 +16,19 @@ class UserSerializer(ModelSerializer):
 class MainDBSerializer(ModelSerializer):
     class Meta:
         model=MainDB
-        fields=['user', 'document', 'created_at']
+        fields=['id', 'user', 'document', 'created_at']
+        read_only_fields=['user']
+
+class QuestionIdSerializer(ModelSerializer):
+    class Meta:
+        model=Quesans
+        fields=['id']
+
+class DashboardQuizSerializer(ModelSerializer):
+    questionsanswers=QuestionIdSerializer(many=True, read_only=True)
+    class Meta:
+        model=MainDB
+        fields=['id', 'user', 'document', 'created_at', 'questionsanswers']
         read_only_fields=['user']
 
 class AnswerSerializer(ModelSerializer):

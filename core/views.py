@@ -41,8 +41,8 @@ class DashboardAPI(APIView):
         return [] 
 
     def get(self, request):
-        data=MainDB.objects.filter(user=request.user)
-        serial=MainDBSerializer(data, many=True)
+        data=MainDB.objects.filter(user=request.user).order_by('-created_at')
+        serial=DashboardQuizSerializer(data, many=True)
         return Response(serial.data)
 
     def post(self , request):
@@ -74,7 +74,7 @@ class DashboardAPI(APIView):
                     Quesans.objects.create(main=main_obj, question=question, option1=option1, option2=option2, option3=option3, option4=option4, correct_ans=correct_ans)   
                 else:
                     return Response({ 'invalid':'invalid ai response returned' })
-            return Response({ 'message':'Quiz created Successfully' }) 
+            return Response({ 'message':'Quiz created Successfully', 'quiz_id': main_obj.id }) 
         else:
             return Response({ 'invalid':'invalid inputs' })        
 
