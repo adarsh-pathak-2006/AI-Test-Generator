@@ -48,6 +48,7 @@ class DashboardAPI(APIView):
                     option4=quesans_serial.validated_data['option4']
                     correct_ans=quesans_serial.validated_data['correct_ans']
                     Quesans.objects.create(main=main_obj, question=question, option1=option1, option2=option2, option3=option3, option4=option4, correct_ans=correct_ans)
+                    return Response({ 'message':'quiz created successfully' })
                 else:
                     return Response({ 'invalid':'invalid ai response returned' })
         else:
