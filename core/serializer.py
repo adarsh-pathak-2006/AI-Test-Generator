@@ -28,7 +28,7 @@ class DashboardQuizSerializer(ModelSerializer):
     questionsanswers=QuestionIdSerializer(many=True, read_only=True)
     class Meta:
         model=MainDB
-        fields=['id', 'user', 'document', 'created_at', 'questionsanswers']
+        fields=['id', 'user', 'document', 'created_at', 'questionsanswers', 'score']
         read_only_fields=['user']
 
 class AnswerSerializer(ModelSerializer):
@@ -45,4 +45,4 @@ class QuesAnsSerializer(ModelSerializer):
 class QuestionSerializer(ModelSerializer):
     class Meta:
         model=Quesans
-        fields=['question', 'option1', 'option2', 'option3', 'option4']
+        fields=['question', 'option1', 'option2', 'option3', 'option4', 'answer', 'mark']
