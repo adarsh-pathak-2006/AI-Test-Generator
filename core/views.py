@@ -91,15 +91,13 @@ class QuizAPI(APIView):
         main_obj=get_object_or_404(MainDB, user=request.user, id=pk)
         ques_data=get_object_or_404(Quesans, main=main_obj, id=ck)
         serial=AnswerSerializer(ques_data, data=request.data)
-        score_array=0
         if serial.is_valid():
             answer=serial.validated_data['answer']
             if answer==ques_data.correct_ans:
-                score_array+=1
                 ques_data.mark='R'
                 ques_data.save()
-                main_obj.score=score_array
-                main_obj.save()
+                main_obj.score+=1
+                main_obj.save(user=request.user)
                 return Response({ 'message':'correct answer' })
             else:
                 return Response({ 'message':'wrong answer' })
