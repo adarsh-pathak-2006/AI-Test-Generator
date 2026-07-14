@@ -5,6 +5,7 @@ class MainDB(models.Model):
     user=models.ForeignKey(User, on_delete=models.CASCADE)
     document=models.TextField()
     created_at=models.DateTimeField(auto_now_add=True)
+    score=models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.document[:100]
@@ -18,7 +19,7 @@ class Quesans(models.Model):
     option4=models.TextField()
     answer=models.CharField(max_length=1, choices=[('A','A'), ('B','B'), ('C','C'), ('D','D')], null=True)
     correct_ans=models.TextField()
-    mark=models.PositiveIntegerField(default=0)
+    mark=models.CharField(choices=[('R','R'), ('W', 'W')], default='W', max_length=1)
 
     def __str__(self):
         return self.question[:100]
