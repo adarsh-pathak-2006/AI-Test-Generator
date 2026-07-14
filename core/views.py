@@ -7,6 +7,7 @@ from services.output import final_output
 from core.throttle import LoginUserThrottle, RegisterUserThrottle, QuizCreationThrottle
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.permissions import IsAuthenticated
+import json
 
 
 class CustomObtainPair(TokenObtainPairView):
@@ -48,7 +49,18 @@ class DashboardAPI(APIView):
         serial=MainDBSerializer(data=request.data)
         if serial.is_valid():
             document=serial.validated_data['document']
-            output_data=final_output(doc=document)
+            output_data_str=final_output(doc=document)
+            try:
+                # Remove any markdown formatting the AI might add
+                cleaned_output = output_data_str.strip()
+                if cleaned_output.startswith("```json"):
+                    cleaned_output = cleaned_output[7:]
+                if cleaned_output.endswith("```"):
+                    cleaned_output = cleaned_output[:-3]
+                output_data = json.loads(cleaned_output)
+            except json.JSONDecodeError:
+                return Response({ 'invalid': 'Failed to parse AI output as JSON' })
+                
             main_obj=MainDB.objects.create(user=request.user, document=document)
             for output in output_data:
                 quesans_serial=QuesAnsSerializer(data=output)
@@ -71,7 +83,7 @@ class QuizAPI(APIView):
     permission_classes=[IsAuthenticated]
     def get(self, request, pk, ck):
         main_obj=get_object_or_404(MainDB, user=request.user, id=pk)
-        ques_data=get_object_or_404(Quesans, input=main_obj, id=ck)
+        ques_data=get_object_or_404(Quesans, main=main_obj, id=ck)
         serial=QuestionSerializer(ques_data)
         return Response(serial.data)
     
